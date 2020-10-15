@@ -326,17 +326,26 @@ class TFPreTrainedModel(tf.keras.Model, TFModelUtilsMixin, TFGenerationMixin):
     authorized_missing_keys = None
     authorized_unexpected_keys = None
 
-    @property
-    def dummy_inputs(self) -> Dict[str, tf.Tensor]:
-        """
-        Dummy inputs to build the network.
+    # @property
+    # def dummy_inputs(self) -> Dict[str, tf.Tensor]:
+    #     """
+    #     Dummy inputs to build the network.
+    #
+    #     Returns:
+    #         :obj:`Dict[str, tf.Tensor]`: The dummy inputs.
+    #     """
+    #     return self._dummy_inputs
+    #
+    # @dummy_inputs.setter
+    # def dummy_inputs(self, v):
+    #     self._dummy_inputs.pop('input_ids', tf.constant(v))
 
-        Returns:
-            :obj:`Dict[str, tf.Tensor]`: The dummy inputs.
-        """
-        return {"input_ids": tf.constant(DUMMY_INPUTS)}
+    def __init__(self, config, dummy_input=None, *inputs, **kwargs):
+        if dummy_input is None:
+            self.dummy_inputs = {"input_ids": tf.constant([[7]*64, [2]*64, [4]*64])}
+        else:
+            self.dummy_inputs = {"input_ids": tf.constant(dummy_input)}
 
-    def __init__(self, config, *inputs, **kwargs):
         super().__init__(*inputs, **kwargs)
         if not isinstance(config, PretrainedConfig):
             raise ValueError(
